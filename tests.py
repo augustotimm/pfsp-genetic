@@ -125,6 +125,27 @@ def createOrderList(solution):
                         order.insert(iIndex,k)
     return order
 
-neOrderr=evaluateSolution(ex5)
+neworder=evaluateSolution(ex5)
+
+def createMakespanTable(solution):
+    makespanTable = [[-1 for x in range(tasksQuantity)] for y in range(machineQuantity)]
+    for machine in range(machineQuantity):
+        lastMakespan =0
+        for y in range(tasksQuantity):
+            task = solution[y]
+            if(machine == 0):
+                makespanTable[machine][y] = lastMakespan + makeSpanMachineTask[machine][task]
+                lastMakespan = makespanTable[machine][y]
+            else:
+                lastMachineCurrentTask =makespanTable[machine-1][y]
+                lastTaskCurrentMachine =makespanTable[machine][y-1]
+                if(lastMachineCurrentTask > lastTaskCurrentMachine):
+                    makespanTable[machine][y] = lastMachineCurrentTask + makeSpanMachineTask[machine][task]
+                else:
+                    makespanTable[machine][y] = lastTaskCurrentMachine + makeSpanMachineTask[machine][task]
+    return makespanTable
+
+def getMaxMakespanOfsolution(solution)
+    return max(max(createMakespanTable(solution)))
 
 #child = twoPointCrossOver(ex1,ex2)
