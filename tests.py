@@ -6,7 +6,7 @@ childrenList = [0 for x in range(childrenQuantity)]
 tasksQuantity =5  #Quantidade de tarefas N
 machineQuantity=4 #Quantidade de maquinas M
 variableColumns = tasksQuantity-1
-makeSpanMachineTask =[[0 for x in range(tasksQuantity) ] for y in range(machineQuantity)] #Array bidimensional para salvar o makespan de cada tarefa em cada maquina
+makeSpanMachineTask =[[x +(y*5)for x in range(tasksQuantity) ]  for y in range(machineQuantity)] #Array bidimensional para salvar o makespan de cada tarefa em cada maquina
 orderDefiningVARIABLE =[[0 for x in range(tasksQuantity)] for x in range(tasksQuantity)]#Matriz de decisao para definir a ordem que serao executadas as tarefas
 
 def createChild(seed):
@@ -64,10 +64,67 @@ def twoPointCrossOver(parentA, parentB):
     return newChild
 
 # Lista de testes
-#ex1 = [[-1,0,0,0,0],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
-#ex2 = [[-2,1,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+ex1 = [[-1,0,0,0,0],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
+ex2 = [[-2,1,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+ex3 = [[-2,0,0,0,0],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+ex4 = [[-1,1,1,1,1],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
+ex5 = [[-2,0,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+
+#0 i depois de K
+#1 k depois de i
+def evaluateSolution(solution):
+    #Cria a Lista de ordem de execucao
+    order = createOrderList(solution)
+    #Verifica se a ordem é possivel
+    for i in range(tasksQuantity):
+        for k in range ( i +1, tasksQuantity):
+            kIndex = order.index(k)
+            iIndex = order.index(i)
+            if(solution[i][k] == 0):    
+                if(iIndex<kIndex):
+                    return []
+            else:
+                if(iIndex>kIndex):
+                    return []
+    
+    return order
     
 
 
+def createOrderList(solution):
+    order = []
+    #Cria a Lista de ordem de execucao
+    for i in range(tasksQuantity):
+        for k in range(i+1, tasksQuantity):
+            if(i== 0):
+                #Se i é 0, todos os elementos vao ser novos na lista
+                if( k ==1):
+                    if(solution[i][k] == 0):
+                        order.insert(0,k)
+                        order.insert(1,i)
+                    else:
+                         order.insert(0,i)
+                         order.insert(1,k)
+                else:
+                    iIndex = order.index(i)
+                    if(solution[i][k] == 0):
+                        order.insert(iIndex,k)
+                    else:
+                        order.insert(iIndex+1,k)
+            else:
+                iIndex = order.index(i)
+                kIndex = order.index(k)
+                if(solution[i][k] == 0):
+                    #se K vem depois de I vai ser necessario trocar a posicao de K
+                    if(kIndex > iIndex):
+                        order.remove(k)
+                        order.insert(iIndex,k)
+                else:
+                    if(kIndex < iIndex):
+                        order.remove(k)
+                        order.insert(iIndex,k)
+    return order
+
+neOrderr=evaluateSolution(ex5)
 
 #child = twoPointCrossOver(ex1,ex2)
