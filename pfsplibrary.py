@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#Retorna lista vazia caso nao seja uma solucao valida
 #0 i depois de K
 #1 k depois de i
 def getOrderedSolutionArray(solution,tasksQuantity):

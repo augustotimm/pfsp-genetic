@@ -57,3 +57,5 @@ def twoPointCrossOver(parentA, parentB, tasksQuantity):
                 for y in range(x+1,tasksQuantity):
                     newChild[x][y] = parentB[x][y]
     return newChild
+
+
