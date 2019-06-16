@@ -9,7 +9,7 @@ variableColumns = tasksQuantity-1
 makeSpanMachineTask =[[x +(y*5)for x in range(tasksQuantity) ]  for y in range(machineQuantity)] #Array bidimensional para salvar o makespan de cada tarefa em cada maquina
 orderDefiningVARIABLE =[[0 for x in range(tasksQuantity)] for x in range(tasksQuantity)]#Matriz de decisao para definir a ordem que serao executadas as tarefas
 
-def createChild(seed):
+def createRandomChild(seed):
     random.seed(seed)
     childVariables =[[-1 for x in range(tasksQuantity)] for x in range(variableColumns)] #Removida a ultima coluna pois ela nunca será acessada pelo algoritmo
     for x in range(tasksQuantity):
@@ -64,15 +64,15 @@ def twoPointCrossOver(parentA, parentB):
     return newChild
 
 # Lista de testes
-ex1 = [[-1,0,0,0,0],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
-ex2 = [[-2,1,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
-ex3 = [[-2,0,0,0,0],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
-ex4 = [[-1,1,1,1,1],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
-ex5 = [[-2,0,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+#ex1 = [[-1,0,0,0,0],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
+#ex2 = [[-2,1,1,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+#ex3 = [[-2,0,0,0,0],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
+#ex4 = [[-1,1,1,1,1],[-1,-1,0,0,0],[-1,-1,-1,0,0],[-1,-1,-1,-1,0]]
+ex5 = [[-2,1,0,1,1],[-2,-2,1,1,1],[-2,-2,-2,1,1],[-2,-2,-2,-2,1]]
 
 #0 i depois de K
 #1 k depois de i
-def evaluateSolution(solution):
+def evaluateFactibiltySolution(solution):
     #Cria a Lista de ordem de execucao
     order = createOrderList(solution)
     #Verifica se a ordem é possivel
@@ -80,10 +80,13 @@ def evaluateSolution(solution):
         for k in range ( i +1, tasksQuantity):
             kIndex = order.index(k)
             iIndex = order.index(i)
+            
             if(solution[i][k] == 0):    
+                #Se i vem depois de k, mas na lista ordenada está ao contrario, é infactivel
                 if(iIndex<kIndex):
                     return []
             else:
+                #Se i vem antes de k, mas na lista ordenada está ao contrario, é infactivel
                 if(iIndex>kIndex):
                     return []
     
@@ -125,7 +128,7 @@ def createOrderList(solution):
                         order.insert(iIndex,k)
     return order
 
-neworder=evaluateSolution(ex5)
+neworder=evaluateFactibiltySolution(ex5)
 
 def createMakespanTable(solution):
     makespanTable = [[-1 for x in range(tasksQuantity)] for y in range(machineQuantity)]
@@ -145,7 +148,7 @@ def createMakespanTable(solution):
                     makespanTable[machine][y] = lastTaskCurrentMachine + makeSpanMachineTask[machine][task]
     return makespanTable
 
-def getMaxMakespanOfsolution(solution)
+def getMaxMakespanOfsolution(solution):
     return max(max(createMakespanTable(solution)))
 
 #child = twoPointCrossOver(ex1,ex2)
