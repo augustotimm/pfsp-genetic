@@ -31,7 +31,7 @@ minimize makespan: Cmax;
 s.t. rest1 {i in N} : C[i,1]  >= T[i,1];
 
 # calcula o makespan da maquina 1 para todas as tarefas
-s.t. rest2 : xir in C - xir-1  in C >= Tir;
+s.t. rest2 {i in N, r in M : r > 1}: C[r,i] - C[r-1,i] >= T[r,i];
 
 # 
 s.t. rest3 {k in N, i in N, r in M : k > 1 and i < k}: C[r,i] -C[r,k]  + P * D[i,k] >= T[k,r];
