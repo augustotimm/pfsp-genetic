@@ -4,58 +4,23 @@ import copy
 
 def createRandomChild(seed,tasksQuantity):
     random.seed(seed)
-    variableColumns = tasksQuantity-1
-    childVariables =[[-1 for x in range(tasksQuantity)] for x in range(variableColumns)] #Removida a ultima coluna pois ela nunca será acessada pelo algoritmo
-    for x in range(tasksQuantity):
-        for y in range(x+1,tasksQuantity):
-            newVal = random.randint(0,1)
-            childVariables[x][y] = newVal
-    return childVariables
+    order =  range(tasksQuantity)
+    random.shuffle(order)
+    return order
 
 #Funcao que fara o crossover
-def twoPointCrossOver(parentA, parentB, tasksQuantity):
-    variableColumns = tasksQuantity -1
-    newChild = copy.deepcopy( parentA)
-    pointAX = random.randint(1,variableColumns) 
-    pointAY = random.randint(pointAX ,tasksQuantity) 
-    pointBX = random.randint(pointAX ,variableColumns) 
-    if(pointBX ==pointAX ):
-        pointBY = random.randint(pointAY ,tasksQuantity) 
-    else:
-        pointBY = random.randint(pointBX ,tasksQuantity) 
-    #Verifica se vai ser necessario alterar mais de uma linha
-    if(pointAX == pointBX):
-        #verificar se sera mais de um elemento
-            if(pointAY == pointBY):
-                #se x e y sao iguais, é alterado apenas um elemento
-                newChild[pointAX-1][pointAY-1] = parentB[pointAX-1][pointAY-1]
-            else:
-                #alterado apenas o intervalo entre AY e BY
-                for y in range(pointAY-1,pointBY):
-                    newChild[pointAX-1][y] = parentB[pointAX-1][y]
-    #Mais de uma linha alterada                    
-    else:
-        #percorrerá todas as linhas alteradas
-        for x in range(pointAX-1,pointBX):
-            if(x == pointAX-1):
-                #A linha do elemento A nao deve ser copiada por inteira, apenas os elementos herdados
-                if( pointAY == tasksQuantity):
-                    #se AY é for a ultima coluna é herdado apenas um elemento da linha
-                    newChild[x][pointAY-1] = parentB[x][pointAY-1]
-                else:
-                    #caso contrario é necessario percorrer os elementos no intervalo apó AY
-                    for y in range(pointAY-1,tasksQuantity):
-                        newChild[x][y] = parentB[x][y]
-            elif(x==pointBX-1):
-                if(pointBY == x+1):
-                    newChild[x][pointBY-1] = parentB[x][pointBY-1]
-                #A linha do elemento B nao deve ser herdada inteira, apenas até BY
-                else:
-                    for y in range(x+1,pointBY):
-                        newChild[x][y] = parentB[x][y]
-            else:
-                for y in range(x+1,tasksQuantity):
-                    newChild[x][y] = parentB[x][y]
-    return newChild
-
-
+def onePointCrossOver(parentA, parentB,tasksQuantity):
+    crossOverPoint = random.randint(0,tasksQuantity-1)
+    child = parentA[0:crossOverPoint] + parentB[crossOverPoint:tasksQuantity]
+    aPart =parentA[0:crossOverPoint] + [-1 for x in range(crossOverPoint,tasksQuantity)]
+    
+    if(crossOverPoint != 0 or crossOverPoint != tasksQuantity-1):
+        while(  len(child) != len(set(child)) ):
+            for iterator in range(crossOverPoint,tasksQuantity):
+                bPart = child[iterator] 
+                if(bPart in aPart ):
+                    if(bPart != parentA[iterator]):
+                        child[iterator] = parentA[iterator]
+                        #agora esse elemento tambem é herdado do pai A
+                        aPart[iterator]=child[iterator]
+    return child

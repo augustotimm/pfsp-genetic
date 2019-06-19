@@ -43,21 +43,8 @@ def main():
         makeSpanMachineTask = list(reader)
 
     population = []
-    for x in range(populationSize):
-        validChild = False
-        
-        while(not validChild):
-            newchild = populationlibrary.createRandomChild(seed,tasksQuantity)
-            isValid = pfsplibrary.getOrderedSolutionArray(newchild,tasksQuantity)
-            if(isValid != []):
-                validChild = True
-                print("passou")
-
-            else:
-                print("rodou")
-
-        population.insert(0,newchild)
-        print(population)
+    
+    print(population)
 
 
 
