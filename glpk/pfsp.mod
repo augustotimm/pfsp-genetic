@@ -4,13 +4,14 @@ set N;
 # Conjunto de maquinas
 set M;
 
-
+param numMachine;
+param numTask;
 
 #Parametro de makespan de cada tarefa i em cada maquina j
-set T {i in N, r in M};
+param T {i in N, r in M};
 
 #Constante infinitamente grande
-set P;
+param P;
 
 #Variavel de decisao que indica a ordem de execucao dos processos
 # 1 se processo i vem depois do processo k
@@ -31,18 +32,17 @@ minimize makespan: Cmax;
 s.t. rest1 {i in N} : C[i,1]  >= T[i,1];
 
 # calcula o makespan da maquina 1 para todas as tarefas
-s.t. rest2 {i in N, r in M : r > 1}: C[r,i] - C[r-1,i] >= T[r,i];
+s.t. rest2 {i in N, r in M : r > 1}: C[i,r] - C[i,r-1] >= T[i,r];
 
 # 
-s.t. rest3 {k in N, i in N, r in M : k > 1 and i < k}: C[r,i] -C[r,k]  + P * D[i,k] >= T[k,r];
+s.t. rest3 {k in N, i in N, r in M : k > 1 and i < k}: C[i,r] -C[k,r]  + P * D[i,k] >= T[k,r];
 
 # 
-s.t. rest4 {k in N, i in N, r in M : k > 1 and i < k}: C[r,i] -C[r,k]  + P * D[i,k] <= P - T[k,r];
+s.t. rest4 {k in N, i in N, r in M : k > 1 and i < k}: C[i,r] -C[k,r]  + P * D[i,k] <= P - T[k,r];
 
 # 
-s.t. rest5 {i in N}: Cmax >= C[i,M];
+s.t. rest5 {i in N}: Cmax >= C[i,numMachine];
 
-# 
-s.t. maquina6: xir in C >= 0;
+
 
 
