@@ -1,7 +1,7 @@
 import random
 import copy
 childrenQuantity =3 #quantidade de filhos por geracao
-childrenList = [0 for x in range(childrenQuantity)]
+#childrenList = [0 for x in range(childrenQuantity)]
 
 tasksQuantity =4  #Quantidade de tarefas N
 machineQuantity=2 #Quantidade de maquinas M
@@ -16,6 +16,8 @@ def createRandomChild():
     return order
 child1 = createRandomChild()
 child2 = createRandomChild()
+for x in range(2):
+    print x
 
 #Funcao que fara o crossover
 def onePointCrossOver(parentA, parentB):
@@ -33,7 +35,9 @@ def onePointCrossOver(parentA, parentB):
                         #agora esse elemento tambem é herdado do pai A
                         aPart[iterator]=child[iterator]
     return child
-child3 = onePointCrossOver(child1,child2)
+
+populationSize= 5
+population = [createRandomChild() for x in range (populationSize)]
 
 def createMakespanTable(solution):
     makespanTable = [[-1 for x in range(tasksQuantity)] for y in range(machineQuantity)]
@@ -53,7 +57,7 @@ def createMakespanTable(solution):
                 else:
                     makespanTable[machine][currentTask] = lastTaskCurrentMachine + makeSpanMachineTask[machine][currentTask]
     return makespanTable
-result = createMakespanTable(child1)
+#result = createMakespanTable(child1)
 
 
 def getMaxMakespanOfsolution(solution):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 def createMakespanTable(solution,machineQuantity,tasksQuantity,makeSpanMachineTask):
     makespanTable = [[-1 for x in range(tasksQuantity)] for y in range(machineQuantity)]
+
     for machine in range(machineQuantity):
         lastMakespan =0
         for taskIterator in range(0,len(solution)):
@@ -21,3 +22,10 @@ def createMakespanTable(solution,machineQuantity,tasksQuantity,makeSpanMachineTa
 
 def getMaxMakespanOfsolution(solution,tasksQuantity,machineQuantity,makeSpanMachineTask):
     return max(max(createMakespanTable(solution,tasksQuantity,machineQuantity,makeSpanMachineTask)))
+
+def getMasxMakespanOfList(solutionList,tasksQuantity,machineQuantity,makeSpanMachineTask):
+    newSolution =[]
+    for solution in solutionList:
+        currentSolutionValue = getMaxMakespanOfsolution(solution,machineQuantity,tasksQuantity,makeSpanMachineTask)
+        newSolution.insert(0, (currentSolutionValue,solution) )
+    return newSolution

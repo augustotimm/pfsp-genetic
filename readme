@@ -1,5 +1,5 @@
 Exemplo de como executar o algoritmo
-python geneticAlgorithmPFSP.py -if teste1.csv -m 100 -t 60 -i 10
+python geneticAlgorithmPFSP.py -if simple.csv -m 100 -t 60 -i 10
 
 para saber o que cada parametro significa pode-se executar
 python geneticAlgorithmPFSP.py -h
