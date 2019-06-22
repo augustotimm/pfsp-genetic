@@ -106,8 +106,9 @@ def main():
             else:
                 useless = 0
         lastPopulation = []
+        isUseless = useless >= uselessIterations
         for individual in currentPopulation:
-            lastPopulation.insert(0,(individual[0],individual[1]))
+            lastPopulation.insert(0,(individual[0],individual[1], isUseless))
         lastPopulation.sort(key=lambda tup: tup[0])  
         with open("./out_files/"+args.filename+"_final_population_seed_"+str(seedList[repetition])+"repetition"+str(repetition)+".csv",'wt') as csvFile:
             filewriter = csv.writer(csvFile)
