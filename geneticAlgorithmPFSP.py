@@ -46,10 +46,11 @@ def main():
     machineQuantity= args.machine #Quantidade de maquinas M
     
     makeSpanMachineTask =[[x +(y*5)for x in range(tasksQuantity) ]  for y in range(machineQuantity)] #Array bidimensional para salvar o makespan de cada tarefa em cada maquina
-    
-    with open("./in_files/"+args.filename+".csv",'rb') as f:
-        reader = csv.reader(f,quoting=csv.QUOTE_NONNUMERIC)
+    filepathe = "./in_files/"+args.filename+".csv"
+    with open(filepathe,'rt') as f:
+        reader = csv.reader(f)
         makeSpanMachineTask = list(reader)
+    makeSpanMachineTask = [ [int(i) for i in y] for y in makeSpanMachineTask]
    
     for repetition in range(repeatTimes):
         print("Repetiçao numero:"+ str(repetition))
