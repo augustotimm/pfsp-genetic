@@ -15,19 +15,15 @@ childrenList = [0 for x in range(childrenQuantity)]
 def main():
     parser = ArgumentParser()
     parser.add_argument("-if", "--inputfile", dest="filename",
-                        help="arquivo csv de entrada com makespan da instancia", metavar="FILE", default = "VFR10_15_1_Gap")
+                        help="arquivo csv de entrada com makespan da instancia", metavar="FILE", default = "ready_VFR10_15_1_Gap")
     parser.add_argument("-rp", "--repeat", dest="repeat",
                         help="Numero de vezes que deve ser rodado o algoritmo por completo", metavar="FILE", default=15)
-    parser.add_argument("-m", "--machine", dest="machine", 
-                        help="quantidade de maquinas para a instancia", metavar ="MACHINE", type = int, default = 10)
-    parser.add_argument("-t", "--task", dest="task", 
-                        help="quantidade de tarefas para a instancia", metavar ="TASK",type = int, default = 30)
     parser.add_argument("-i", "--iteration", dest="iteration", 
-                        help="numero maximo de iteracoes a serem executadas", metavar ="ITERATION",type = int, default=20)
+                        help="numero maximo de iteracoes a serem executadas", metavar ="ITERATION",type = int, default=30)
     parser.add_argument("-u", "--useless", dest="useless", 
-                        help="numero maximo de iteracoes sem alterar o valor da solucao", metavar ="USELESS",type = int, default=10)
+                        help="numero maximo de iteracoes sem alterar o valor da solucao", metavar ="USELESS",type = int, default=15)
     parser.add_argument("-p", "--population", dest="population", 
-                        help="tamanho da populacao", metavar ="ITERATION",type = int, default=10)
+                        help="tamanho da populacao", metavar ="ITERATION",type = int, default=20)
     parser.add_argument("-o", "--offspring", dest="offspring", 
                         help="quantidade de filhos a serem gerados por iteracao", metavar ="OFFSPRING",type = int, default=10)
     parser.add_argument("-s", "--seed", dest="seed", 
@@ -41,8 +37,7 @@ def main():
     offSpringQuantity = args.offspring
     iterations = args.iteration
     populationSize = args.population
-    tasksQuantity =args.task  #Quantidade de tarefas N
-    machineQuantity= args.machine #Quantidade de maquinas M
+
     
     makeSpanMachineTask =[]
     seedList =[]
@@ -50,10 +45,14 @@ def main():
     with open("./in_files/"+args.filename+".csv",'rt') as f:
         reader = csv.reader(f)
         makeSpanMachineTask = list(reader)
+    machineQuantity = len(makeSpanMachineTask)
+    tasksQuantity = len(makeSpanMachineTask[0])
     for i in range (machineQuantity):
         for j in range (tasksQuantity):
             makeSpanMachineTask[i][j] = int(makeSpanMachineTask[i][j])
-    
+
+   
+
     with open("./"+seedFile+".csv",'rt') as f:
         reader = csv.reader(f)
         seedListFromFile = list(reader)
@@ -70,12 +69,14 @@ def main():
     #
     for repetition in range(repeatTimes):
         random.seed(seedList[repetition])
+        if( seedList[ repetition] == 8435970344):
+            print(repetition)
 
         print("Repetiçao numero:"+ str(repetition))
         firstPopulation = [ populationlibrary.createRandomChild(tasksQuantity) for x in range(populationSize)]
         #for i in range(populationSize):
         #   firstPopulation [i]= populationlibrary.createRandomChild(tasksQuantity)
-        makeSpanStart = pfsplibrary.getMasxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
+        makeSpanStart = pfsplibrary.getMaxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
         makeSpanStart.sort(key=lambda tup: tup[0])  
 
         with open("./out_files/"+args.filename+"_start_population_seed_"+str(seedList[repetition])+"repetition"+str(repetition)+".csv",'wt') as csvFile:
@@ -92,12 +93,11 @@ def main():
         while(i < iterations and useless < uselessIterations ):
             i+=1
             currentPopulation = populationlibrary.calculateFitness(currentPopulation,populationSize)        
-            makeSpanStart.sort(key=lambda tup: tup[2],reverse= True)  
             parents = populationlibrary.selectParents(currentPopulation)
             while(len(parents)< 3):
                 parents = populationlibrary.selectParents(currentPopulation)
             children = populationlibrary.generateOffSpring(parents,tasksQuantity,offSpringQuantity)
-            children = pfsplibrary.getMasxMakespanOfList(children,tasksQuantity,machineQuantity,makeSpanMachineTask)
+            children = pfsplibrary.getMaxMakespanOfList(children,tasksQuantity,machineQuantity,makeSpanMachineTask)
             newSolution = currentPopulation + children
             newSolution.sort(key=lambda tup: tup[0])  
             currentPopulation = newSolution[:populationSize]
