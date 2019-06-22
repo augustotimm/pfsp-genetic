@@ -16,8 +16,8 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-if", "--inputfile", dest="filename",
                         help="arquivo csv de entrada com makespan da instancia", metavar="FILE")
-    parser.add_argument("-of", "--outputfile", dest="outFilename",
-                        help="arquivo csv de saida solucoes encontradas na execucao e seu resultado", metavar="FILE")
+    parser.add_argument("-rp", "--repeat", dest="repeat",
+                        help="Numero de vezes que deve ser rodado o algoritmo por completo", metavar="FILE", default=1)
     parser.add_argument("-m", "--machine", dest="machine", 
                         help="quantidade de maquinas para a instancia", metavar ="MACHINE", type = int, default = 2)
     parser.add_argument("-t", "--task", dest="task", 
@@ -34,6 +34,8 @@ def main():
                         help="seed para geracao de numeros randomicos", metavar ="ITERATION",type = int, default=13267849)
     args = parser.parse_args()
 
+    repeatTimes = int(args.repeat)
+    
     seed = args.seed
     random.seed(seed)
     uselessIterations = args.useless
@@ -45,34 +47,52 @@ def main():
     
     makeSpanMachineTask =[[x +(y*5)for x in range(tasksQuantity) ]  for y in range(machineQuantity)] #Array bidimensional para salvar o makespan de cada tarefa em cada maquina
     
-    with open("./in_files/"+args.filename,'rb') as f:
+    with open("./in_files/"+args.filename+".csv",'rb') as f:
         reader = csv.reader(f,quoting=csv.QUOTE_NONNUMERIC)
         makeSpanMachineTask = list(reader)
-    firstPopulation = [ populationlibrary.createRandomChild(tasksQuantity) for x in range(populationSize)]
-    #for i in range(populationSize):
-     #   firstPopulation [i]= populationlibrary.createRandomChild(tasksQuantity)
-    makeSpanStart = pfsplibrary.getMasxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
-    
-    makeSpanStart.sort(key=lambda tup: tup[0])  
+   
+    for repetition in range(repeatTimes):
+        print("Repetiçao numero:"+ str(repetition))
+        firstPopulation = [ populationlibrary.createRandomChild(tasksQuantity) for x in range(populationSize)]
+        #for i in range(populationSize):
+        #   firstPopulation [i]= populationlibrary.createRandomChild(tasksQuantity)
+        makeSpanStart = pfsplibrary.getMasxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
+        makeSpanStart.sort(key=lambda tup: tup[0])  
 
-    currentPopulation = makeSpanStart
-    i = 0
-    useless = 0
-    while(i < iterations and useless < uselessIterations ):
-        print(currentPopulation)
-        i+=1
-        currentPopulation = populationlibrary.calculateFitness(currentPopulation,populationSize)        
-        makeSpanStart.sort(key=lambda tup: tup[2],reverse= True)  
-        parents = populationlibrary.selectParents(currentPopulation)
-        while(len(parents)< 3):
+        with open("./out_files/"+args.filename+"_start_population"+str(repetition)+".csv",'wb') as csvFile:
+            filewriter = csv.writer(csvFile)
+            filewriter.writerows(makeSpanStart)
+            
+
+
+        currentPopulation = makeSpanStart
+        i = 0
+        lastValue = makeSpanStart[0][0]
+        useless = 0
+
+        while(i < iterations and useless < uselessIterations ):
+            i+=1
+            currentPopulation = populationlibrary.calculateFitness(currentPopulation,populationSize)        
+            makeSpanStart.sort(key=lambda tup: tup[2],reverse= True)  
             parents = populationlibrary.selectParents(currentPopulation)
-        children = populationlibrary.generateOffSpring(parents,tasksQuantity,offSpringQuantity)
-        children = pfsplibrary.getMasxMakespanOfList(children,tasksQuantity,machineQuantity,makeSpanMachineTask)
-        newSolution = currentPopulation + children
-        newSolution.sort(key=lambda tup: tup[0])  
-        currentPopulation = newSolution[:populationSize]
-        
-    
+            while(len(parents)< 3):
+                parents = populationlibrary.selectParents(currentPopulation)
+            children = populationlibrary.generateOffSpring(parents,tasksQuantity,offSpringQuantity)
+            children = pfsplibrary.getMasxMakespanOfList(children,tasksQuantity,machineQuantity,makeSpanMachineTask)
+            newSolution = currentPopulation + children
+            newSolution.sort(key=lambda tup: tup[0])  
+            currentPopulation = newSolution[:populationSize]
+            if(currentPopulation[0][0] == lastValue):
+                useless += 1
+            else:
+                useless = 0
+        lastPopulation = []
+        for individual in currentPopulation:
+            lastPopulation.insert(0,(individual[0],individual[1]))
+        lastPopulation.sort(key=lambda tup: tup[0])  
+        with open("./out_files/"+args.filename+"_final_population"+str(repetition)+".csv",'wb') as csvFile:
+            filewriter = csv.writer(csvFile)
+            filewriter.writerows(lastPopulation)
 
     
     
