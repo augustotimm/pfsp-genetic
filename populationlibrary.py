@@ -3,7 +3,7 @@ import random
 import copy
 
 def createRandomChild(tasksQuantity):
-    order =  range(tasksQuantity)
+    order =  list(range(tasksQuantity))
     random.shuffle(order)
     return order
 
