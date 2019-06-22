@@ -7,23 +7,26 @@ def createMakespanTable(solution,machineQuantity,tasksQuantity,makeSpanMachineTa
         for taskIterator in range(0,len(solution)):
             currentTask = solution[ taskIterator]
             previousTask = solution[taskIterator-1]
+            currentMakespan = makeSpanMachineTask[machine][currentTask]
             if(machine == 0):
-                makespanTable[machine][currentTask] = lastMakespan + makeSpanMachineTask[machine][currentTask]
+                makespanTable[machine][currentTask] = lastMakespan + currentMakespan
                 lastMakespan = makespanTable[machine][currentTask]
             else:
-                lastMachineCurrentTask =makespanTable[machine-1][currentTask]
-                lastTaskCurrentMachine =makespanTable[machine][previousTask]
-                if(lastMachineCurrentTask > lastTaskCurrentMachine or taskIterator == 0):
-                    makespanTable[machine][currentTask] = lastMachineCurrentTask + makeSpanMachineTask[machine][currentTask]
+                lastMachineMakespan =makespanTable[machine-1][currentTask]
+                lastTaskMakespan =makespanTable[machine][previousTask]
+                if(lastMachineMakespan < lastTaskMakespan and taskIterator == 0):
+                    print(lastMachineMakespan)
+                if(lastMachineMakespan > lastTaskMakespan or taskIterator == 0):
+                    makespanTable[machine][currentTask] = lastMachineMakespan + currentMakespan
                 else:
-                    makespanTable[machine][currentTask] = lastTaskCurrentMachine + makeSpanMachineTask[machine][currentTask]
+                    makespanTable[machine][currentTask] = lastTaskMakespan + currentMakespan
     return makespanTable
 
 
 def getMaxMakespanOfsolution(solution,tasksQuantity,machineQuantity,makeSpanMachineTask):
     return max(max(createMakespanTable(solution,tasksQuantity,machineQuantity,makeSpanMachineTask)))
 
-def getMasxMakespanOfList(solutionList,tasksQuantity,machineQuantity,makeSpanMachineTask):
+def getMaxMakespanOfList(solutionList,tasksQuantity,machineQuantity,makeSpanMachineTask):
     newSolution =[]
     for solution in solutionList:
         currentSolutionValue = getMaxMakespanOfsolution(solution,machineQuantity,tasksQuantity,makeSpanMachineTask)

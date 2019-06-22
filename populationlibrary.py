@@ -27,7 +27,7 @@ def onePointCrossOver(parentA, parentB,tasksQuantity):
 def calculateFitness(population, populationSize):
     fitnessSum = sum(1/individual[0] for individual in population )
     for individualIterator in range(populationSize):
-        population[individualIterator] = (population[individualIterator][0],population[individualIterator][1], (1/population[individualIterator][0])/fitnessSum)
+        population[individualIterator] = (population[individualIterator][0],population[individualIterator][1], (1/population[individualIterator][0])/fitnessSum)     
     return population
 
 def generateOffSpring(parents, tasksQuantity,offSpringQuantity):
@@ -56,5 +56,6 @@ def selectParents(currentPopulation):
     while(r>chosenSum):
         chosenSum += currentPopulation[individualNumber][2]
         parents.insert(0, currentPopulation[individualNumber][1])
+        individualNumber+=1
     
     return parents
