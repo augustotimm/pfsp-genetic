@@ -4,7 +4,7 @@ import csv
 
 parser = ArgumentParser()
 parser.add_argument("-if", "--inputfile", dest="filename",
-                        help="arquivo csv pra adaptar", metavar="FILE", default = "VFR500_60_3_Gap")
+                        help="arquivo csv pra adaptar", metavar="FILE", default = "VFR60_10_3_Gap")
 args = parser.parse_args()
 
 
