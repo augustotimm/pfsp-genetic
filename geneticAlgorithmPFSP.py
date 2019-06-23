@@ -23,9 +23,9 @@ def main():
     parser.add_argument("-u", "--useless", dest="useless", 
                         help="numero maximo de iteracoes sem alterar o valor da solucao", metavar ="USELESS",type = int, default=15)
     parser.add_argument("-p", "--population", dest="population", 
-                        help="tamanho da populacao", metavar ="ITERATION",type = int, default=20)
+                        help="tamanho da populacao", metavar ="ITERATION",type = int, default=100)
     parser.add_argument("-o", "--offspring", dest="offspring", 
-                        help="quantidade de filhos a serem gerados por iteracao", metavar ="OFFSPRING",type = int, default=10)
+                        help="quantidade de filhos a serem gerados por iteracao", metavar ="OFFSPRING",type = int, default=30)
     parser.add_argument("-s", "--seed", dest="seed", 
                        help="Nome do arquivo com lista de seeds", metavar ="ITERATION",type = str, default="seeds")
     args = parser.parse_args()
@@ -44,12 +44,13 @@ def main():
     seedListFromFile =[]
     with open("./in_files/"+args.filename+".csv",'rt') as f:
         reader = csv.reader(f)
-        makeSpanMachineTask = list(reader)
-    machineQuantity = len(makeSpanMachineTask)
-    tasksQuantity = len(makeSpanMachineTask[0])
+        makeSpanMachineTaskSTR = list(reader)
+    machineQuantity = len(makeSpanMachineTaskSTR[0])
+    tasksQuantity = len(makeSpanMachineTaskSTR)
+    makeSpanMachineTask=[[0 for i in range(tasksQuantity)] for y in range(machineQuantity)]
     for i in range (machineQuantity):
         for j in range (tasksQuantity):
-            makeSpanMachineTask[i][j] = int(makeSpanMachineTask[i][j])
+            makeSpanMachineTask[i][j] = int(makeSpanMachineTaskSTR[j][i])
 
    
 
@@ -67,6 +68,8 @@ def main():
     #Comeco do algoritmo
     #
     #
+    startFile = []
+    endFile = []
     for repetition in range(repeatTimes):
         random.seed(seedList[repetition])
         if( seedList[ repetition] == 8435970344):
@@ -78,10 +81,9 @@ def main():
         #   firstPopulation [i]= populationlibrary.createRandomChild(tasksQuantity)
         makeSpanStart = pfsplibrary.getMaxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
         makeSpanStart.sort(key=lambda tup: tup[0])  
+        startFile += makeSpanStart
 
-        with open("./out_files/"+args.filename+"_start_population_seed_"+str(seedList[repetition])+"repetition"+str(repetition)+".csv",'wt') as csvFile:
-            filewriter = csv.writer(csvFile)
-            filewriter.writerows(makeSpanStart)
+        
             
 
 
@@ -110,10 +112,15 @@ def main():
         for individual in currentPopulation:
             lastPopulation.insert(0,(individual[0],individual[1], isUseless))
         lastPopulation.sort(key=lambda tup: tup[0])  
-        with open("./out_files/"+args.filename+"_final_population_seed_"+str(seedList[repetition])+"repetition"+str(repetition)+".csv",'wt') as csvFile:
+        endFile += lastPopulation
+    
+    with open("./out_files/"+args.filename+"_final_populations.csv",'wt') as csvFile:
+        filewriter = csv.writer(csvFile)
+        filewriter.writerows(endFile)
+    
+    with open("./out_files/"+args.filename+"_start_populations.csv",'wt') as csvFile:
             filewriter = csv.writer(csvFile)
-            filewriter.writerows(lastPopulation)
-
+            filewriter.writerows(startFile)
     
     
 
