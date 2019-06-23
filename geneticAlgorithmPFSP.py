@@ -6,8 +6,10 @@ from argparse import ArgumentParser
 import sys
 import csv
 import random
-childrenQuantity =3 #quantidade de filhos por geracao
-childrenList = [0 for x in range(childrenQuantity)]
+import time
+from functools import wraps
+
+
 
 
 
@@ -71,6 +73,7 @@ def main():
     startFile = []
     endFile = []
     for repetition in range(repeatTimes):
+        start = time.time()
         random.seed(seedList[repetition])
         if( seedList[ repetition] == 8435970344):
             print(repetition)
@@ -81,7 +84,7 @@ def main():
         #   firstPopulation [i]= populationlibrary.createRandomChild(tasksQuantity)
         makeSpanStart = pfsplibrary.getMaxMakespanOfList(firstPopulation,tasksQuantity,machineQuantity,makeSpanMachineTask)
         makeSpanStart.sort(key=lambda tup: tup[0])  
-        startFile += makeSpanStart
+        startFile += [makeSpanStart[0]]
 
         
             
@@ -111,8 +114,10 @@ def main():
         isUseless = useless >= uselessIterations
         for individual in currentPopulation:
             lastPopulation.insert(0,(individual[0],individual[1], isUseless))
-        lastPopulation.sort(key=lambda tup: tup[0])  
-        endFile += lastPopulation
+        lastPopulation.sort(key=lambda tup: tup[0]) 
+        end=time.time() 
+        elapsed = end - start
+        endFile += [(lastPopulation[0], elapsed)]
     
     with open("./out_files/"+args.filename+"_final_populations.csv",'wt') as csvFile:
         filewriter = csv.writer(csvFile)
